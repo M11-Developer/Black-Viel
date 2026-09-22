@@ -1,0 +1,32 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0f14"/>
+      <stop offset="100%" stop-color="#050508"/>
+    </linearGradient>
+    <linearGradient id="mpGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6aa6ff"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="12" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+  <rect x="2" y="2" width="508" height="508" rx="126" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+  <g filter="url(#glow)" transform="translate(80, 80)">
+    <g>
+      <circle cx="80" cy="80" r="56" fill="none" stroke="url(#mpGrad)" stroke-width="6"/>
+      <path d="M40 200 C40 160, 120 160, 120 200 L120 220 L0 220 L0 200 C0 160, 40 160, 40 200" fill="url(#mpGrad)" opacity="0.8"/>
+    </g>
+    <g transform="translate(160, 0)">
+      <circle cx="80" cy="80" r="56" fill="none" stroke="#8b5cf6" stroke-width="6"/>
+      <path d="M40 200 C40 160, 120 160, 120 200 L120 220 L0 220 L0 200 C0 160, 40 160, 40 200" fill="#8b5cf6" opacity="0.8"/>
+    </g>
+    <g transform="translate(80, 140)">
+      <line x1="40" y1="40" x2="120" y2="40" stroke="#6aa6ff" stroke-width="4" stroke-dasharray="8 8" opacity="0.6"/>
+      <circle cx="80" cy="40" r="8" fill="#4ade80" stroke="#fff" stroke-width="2"/>
+    </g>
+  </g>
+</svg>
