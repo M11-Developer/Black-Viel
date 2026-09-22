@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <meta name="description" content="BLACK VEIL - THE CITY FORGOT. YOU DIDN'T. Cinematic 3D tactical stealth action in Veyra megacity." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="BLACK VEIL" />
+  <meta property="og:title" content="BLACK VEIL - THE CITY FORGOT. YOU DIDN'T." />
+  <meta property="og:description" content="Enter Veyra. Survive its people. Uncover its secrets. AAA 3D tactical stealth action." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/icons/icon-512.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <title>BLACK VEIL | THE CITY FORGOT. YOU DIDN'T.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Orbitron:wght@400;600;900&family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{width:100%;height:100%;overflow:hidden;background:#050508;color:#e8e8ec;font-family:'Inter',system-ui,sans-serif;overscroll-behavior:none;touch-action:none;user-select:none;-webkit-user-select:none}
+    #app{position:fixed;inset:0;width:100%;height:100%;background:#050508}
+    #game-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;outline:none}
+    #loading-screen{position:fixed;inset:0;z-index:9999;background:radial-gradient(120% 120% at 50% 20%, #141420 0%, #0a0a0f 40%, #050508 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease}
+    .loading-logo{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(28px,6vw,64px);letter-spacing:.25em;color:#fff;text-shadow:0 0 40px rgba(120,180,255,.4),0 0 80px rgba(120,180,255,.15)}
+    .loading-tagline{font-family:'JetBrains Mono',monospace;font-size:clamp(10px,1.5vw,13px);letter-spacing:.4em;color:#7a7a8a;margin-top:12px;text-transform:uppercase}
+    .loading-bar-wrap{width:min(420px,80vw);height:2px;background:rgba(255,255,255,.08);margin-top:48px;overflow:hidden;position:relative;border-radius:2px}
+    .loading-bar{height:100%;width:0%;background:linear-gradient(90deg,#6aa6ff,#a78bfa,#6aa6ff);background-size:200% 100%;animation:shimmer 1.5s linear infinite;transition:width .2s ease;box-shadow:0 0 12px rgba(106,166,255,.6)}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .loading-status{font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a5a6a;margin-top:16px;letter-spacing:.1em}
+    .loading-tip{font-family:'Inter',sans-serif;font-size:12px;color:#8a8a9a;margin-top:32px;max-width:360px;text-align:center;line-height:1.5;opacity:.7}
+    #orientation-warning{position:fixed;inset:0;z-index:10000;background:#050508;display:none;align-items:center;justify-content:center;flex-direction:column;color:#fff;text-align:center;padding:24px}
+    @media (orientation:portrait) and (max-width:768px){#orientation-warning{display:flex}}
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="game-canvas" tabindex="0"></canvas>
+    
+    <div id="loading-screen">
+      <div class="loading-logo">BLACK VEIL</div>
+      <div class="loading-tagline">The City Forgot. You Didn't.</div>
+      <div class="loading-bar-wrap"><div id="loading-bar" class="loading-bar"></div></div>
+      <div id="loading-status" class="loading-status">INITIALIZING VEYRA...</div>
+      <div id="loading-tip" class="loading-tip">Veyra went dark three years ago. Power, comms, transport — gone in 17 minutes. Official story: infrastructure failure. The evidence says otherwise.</div>
+    </div>
+
+    <div id="orientation-warning">
+      <div style="font-family:Orbitron;font-size:24px;letter-spacing:.2em;margin-bottom:16px">BLACK VEIL</div>
+      <div style="font-size:14px;opacity:.7;max-width:280px;line-height:1.5">For optimal experience, rotate your device to landscape. The dead city wasn't built for portrait.</div>
+      <div style="margin-top:24px;font-size:32px">↻</div>
+    </div>
+  </div>
+
+  <!-- UI Root Mounts - Game will inject -->
+  <div id="ui-root"></div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
