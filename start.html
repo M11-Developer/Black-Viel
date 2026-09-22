@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLACK VEIL — Launcher</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050508;color:#e8e8ec;font-family:'Inter',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden}
+.bg{position:fixed;inset:0;background:radial-gradient(120% 120% at 50% 20%, #141420 0%, #0a0a0f 40%, #050508 100%);z-index:-2}
+.grid{position:fixed;inset:0;background:repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(106,166,255,0.02) 2px, rgba(106,166,255,0.02) 4px);z-index:-1;animation:scan 8s linear infinite}
+@keyframes scan{0%{transform:translateY(0)}100%{transform:translateY(4px)}}
+.card{width:min(560px,92vw);background:rgba(10,10,15,0.9);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.08);padding:32px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#6aa6ff,#a78bfa,#6aa6ff);background-size:200% 100%;animation:shimmer 2s linear infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:32px;letter-spacing:0.22em;color:#fff;text-shadow:0 0 30px rgba(106,166,255,0.5)}
+.tagline{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.35em;color:#6a6a7a;text-transform:uppercase;margin-top:8px}
+.status{margin-top:24px;padding:16px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.06);font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:middle}
+.dot-green{background:#4dff9a;box-shadow:0 0 8px #4dff9a}
+.dot-yellow{background:#ffb84d;box-shadow:0 0 8px #ffb84d;animation:pulse 1.5s infinite}
+.dot-red{background:#ff4d6a;box-shadow:0 0 8px #ff4d6a}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.btn{width:100%;margin-top:16px;padding:14px 20px;font-family:'Orbitron',monospace;font-size:13px;letter-spacing:0.15em;color:#fff;background:linear-gradient(90deg, rgba(106,166,255,0.15), rgba(167,139,250,0.1));border:1px solid rgba(106,166,255,0.3);cursor:pointer;transition:all 0.2s ease;text-transform:uppercase}
+.btn:hover{background:linear-gradient(90deg, rgba(106,166,255,0.25), rgba(167,139,250,0.18));box-shadow:0 0 20px rgba(106,166,255,0.2);transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(90deg, #6aa6ff, #a78bfa);border-color:#6aa6ff;color:#050508;font-weight:700}
+.btn-primary:hover{box-shadow:0 0 30px rgba(106,166,255,0.4)}
+.links{margin-top:20px;display:flex;gap:8px;flex-wrap:wrap}
+.link{flex:1;min-width:120px;padding:10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#8a8a9a;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);text-decoration:none;transition:all 0.2s}
+.link:hover{color:#fff;border-color:rgba(106,166,255,0.3);background:rgba(106,166,255,0.08)}
+.info{margin-top:20px;padding:12px;background:rgba(106,166,255,0.06);border-left:2px solid #6aa6ff;font-size:12px;line-height:1.5;color:#9a9aaa}
+.info strong{color:#e8e8ec}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="grid"></div>
+<div class="card">
+  <div class="logo">BLACK VEIL</div>
+  <div class="tagline">The City Forgot. You Didn't.</div>
+  
+  <div class="status" id="status">
+    <span class="status-dot dot-yellow"></span>Checking server...
+  </div>
+
+  <button class="btn btn-primary" id="launchBtn">▶ Launch Game</button>
+  <button class="btn" id="buildBtn">🔧 Build & Launch (First Time)</button>
+  
+  <div class="links">
+    <a class="link" href="http://localhost:4173" target="_blank" id="localLink">LOCAL:4173</a>
+    <a class="link" href="http://localhost:5173" target="_blank">DEV:5173</a>
+    <a class="link" href="https://github.com/M11-Developer/Black-Viel" target="_blank">GITHUB</a>
+  </div>
+
+  <div class="info">
+    <strong>One-Click Launch:</strong><br>
+    • Windows: Double-click <code>Black-Veil.bat</code><br>
+    • Linux/Mac: Double-click <code>Black-Veil.sh</code> or run <code>./Black-Veil.sh</code><br>
+    • Node: <code>node launch.mjs</code><br>
+    • This page auto-detects server and opens game
+  </div>
+
+  <div class="info" style="margin-top:12px; border-left-color:#4dff9a; background:rgba(77,255,154,0.06)">
+    <strong>M11 Dev — Primary Creator</strong><br>
+    YouTube: <a href="https://youtube.com/@m11-dev?si=GH9TIb3iQJh0UDev" target="_blank" style="color:#6aa6ff">youtube.com/@m11-dev</a> (Primary)<br>
+    GitHub: github.com/M11-Developer | TikTok: vt.tiktok.com/ZS9A2FU1fAJWo-k9M67<br>
+    Contact: ma7292537@gmail.com
+  </div>
+</div>
+
+<script>
+const statusEl = document.getElementById('status');
+const launchBtn = document.getElementById('launchBtn');
+const buildBtn = document.getElementById('buildBtn');
+const localLink = document.getElementById('localLink');
+
+const SERVERS = [
+  'http://localhost:4173',
+  'http://localhost:5173',
+  'http://127.0.0.1:4173',
+  'http://127.0.0.1:5173'
+];
+
+async function checkServer(url) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 1500);
+    const res = await fetch(url, { signal: controller.signal, mode: 'no-cors' });
+    clearTimeout(timeout);
+    return true;
+  } catch {
+    // Try image method for no-cors
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url + '/favicon.ico?'+Date.now();
+      setTimeout(() => resolve(false), 1500);
+    });
+  }
+}
+
+async function detectServer() {
+  statusEl.innerHTML = '<span class="status-dot dot-yellow"></span>Scanning for BLACK VEIL server...';
+  
+  for (const url of SERVERS) {
+    const ok = await checkServer(url);
+    if (ok) {
+      statusEl.innerHTML = `<span class="status-dot dot-green"></span>Server found at <strong style="color:#4dff9a">${url}</strong> — Ready to launch`;
+      localLink.href = url;
+      localLink.textContent = url.replace('http://','').toUpperCase();
+      localLink.style.color = '#4dff9a';
+      localLink.style.borderColor = 'rgba(77,255,154,0.3)';
+      return url;
+    }
+  }
+  
+  statusEl.innerHTML = '<span class="status-dot dot-red"></span>No server detected. Click "Build & Launch" or run launcher script.';
+  return null;
+}
+
+async function launchGame() {
+  const server = await detectServer();
+  if (server) {
+    window.open(server, '_blank');
+    statusEl.innerHTML = `<span class="status-dot dot-green"></span>Launched at <strong>${server}</strong> — Check new tab`;
+    // Notification
+    if ('Notification' in window) {
+      if (Notification.permission === 'granted') {
+        new Notification('BLACK VEIL', { body: `Game running at ${server}`, icon: '/icons/icon-192.png' });
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(p => {
+          if (p === 'granted') new Notification('BLACK VEIL', { body: `Game running at ${server}` });
+        });
+      }
+    }
+  } else {
+    alert('No server running!\n\nTo start:\n• Windows: Double-click Black-Veil.bat\n• Linux/Mac: ./Black-Veil.sh\n• Or: node launch.mjs\n\nThen click Launch Game again.');
+  }
+}
+
+launchBtn.addEventListener('click', launchGame);
+buildBtn.addEventListener('click', () => {
+  alert('To build & launch:\n\n1. Open terminal in this folder\n2. Run: node launch.mjs\n\nOr:\n• Windows: Black-Veil.bat\n• Linux/Mac: ./Black-Veil.sh\n\nThe launcher will auto-install, build, start server, and open browser.');
+});
+
+// Auto-detect on load
+detectServer();
+
+// Auto-redirect if server found and ?auto=1
+if (new URLSearchParams(location.search).get('auto') === '1') {
+  detectServer().then(url => {
+    if (url) setTimeout(() => window.location.href = url, 1000);
+  });
+}
+
+// Poll every 3s
+setInterval(detectServer, 3000);
+</script>
+</body>
+</html>

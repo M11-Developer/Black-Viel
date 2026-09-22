@@ -26,3 +26,5 @@ build
 coverage
 out
 target
+Black-Veil-v1.1.0-*.zip
+*.zip

@@ -26,6 +26,7 @@ export class PlayerController {
   isAiming = false;
   isSprinting = false;
   isCrouching = false;
+  isSliding = false;
 
   stats: PlayerStats = {
     health: 100,
@@ -35,27 +36,28 @@ export class PlayerController {
     maxStamina: 100,
   };
 
-  // movement params
-  private walkSpeed = 2.2;
-  private jogSpeed = 4.2;
-  private sprintSpeed = 6.5;
-  private crouchSpeed = 1.6;
-  private jumpForce = 5.5;
-  private gravity = -14;
-  private coyoteTime = 0.15;
+  private walkSpeed = 2.4;
+  private jogSpeed = 4.5;
+  private sprintSpeed = 7.0;
+  private crouchSpeed = 1.8;
+  private slideSpeed = 8.5;
+  private jumpForce = 5.8;
+  private gravity = -15;
+  private coyoteTime = 0.18;
   private coyoteTimer = 0;
   private footstepTimer = 0;
+  private slideTimer = 0;
+  private vaultCooldown = 0;
 
-  // collision
   private colliders: THREE.Box3[] = [];
-  private playerBox = new THREE.Box3();
   private radius = 0.45;
   private heightStand = 1.8;
   private heightCrouch = 1.1;
+  private heightSlide = 0.7;
 
-  // refs
   mesh: THREE.Group;
   private cameraTarget = new THREE.Vector3();
+  private wasGrounded = true;
 
   constructor(private input: InputManager) {
     this.mesh = new THREE.Group();
@@ -65,39 +67,60 @@ export class PlayerController {
     this.colliders = boxes;
   }
 
-  private checkCollision(pos: THREE.Vector3, height: number): boolean {
+  private checkCollision(pos: THREE.Vector3, height: number): THREE.Box3 | null {
     const box = new THREE.Box3(
       new THREE.Vector3(pos.x - this.radius, pos.y, pos.z - this.radius),
       new THREE.Vector3(pos.x + this.radius, pos.y + height, pos.z + this.radius)
     );
     for (const c of this.colliders) {
-      if (box.intersectsBox(c)) return true;
+      if (box.intersectsBox(c)) return c;
     }
-    return false;
+    return null;
+  }
+
+  private canVault(): { can: boolean; height: number; box?: THREE.Box3 } {
+    // Check for low obstacle in front that can be vaulted
+    const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
+    const checkPos = this.position.clone().add(forward.clone().multiplyScalar(0.9));
+    checkPos.y += 0.5;
+    const box = this.checkCollision(checkPos, 1.0);
+    if (box) {
+      const height = box.max.y - this.position.y;
+      if (height > 0.3 && height < 1.6) {
+        // Check if space above is clear
+        const abovePos = checkPos.clone();
+        abovePos.y += height + 0.3;
+        if (!this.checkCollision(abovePos, 0.8)) {
+          return { can: true, height, box };
+        }
+      }
+    }
+    return { can: false, height: 0 };
   }
 
   private moveWithCollision(delta: THREE.Vector3, dt: number) {
-    // X
+    const currentHeight = this.isSliding ? this.heightSlide : this.stance === 'crouch' ? this.heightCrouch : this.heightStand;
+    
     let next = this.position.clone().add(new THREE.Vector3(delta.x, 0, 0));
-    if (!this.checkCollision(next, this.stance === 'crouch' ? this.heightCrouch : this.heightStand)) {
+    if (!this.checkCollision(next, currentHeight)) {
       this.position.x = next.x;
     } else {
-      this.velocity.x = 0;
+      this.velocity.x *= 0.3;
     }
-    // Z
     next = this.position.clone().add(new THREE.Vector3(0, 0, delta.z));
-    if (!this.checkCollision(next, this.stance === 'crouch' ? this.heightCrouch : this.heightStand)) {
+    if (!this.checkCollision(next, currentHeight)) {
       this.position.z = next.z;
     } else {
-      this.velocity.z = 0;
+      this.velocity.z *= 0.3;
     }
-    // Y
     next = this.position.clone().add(new THREE.Vector3(0, delta.y, 0));
-    if (!this.checkCollision(next, this.stance === 'crouch' ? this.heightCrouch : this.heightStand)) {
+    const coll = this.checkCollision(next, currentHeight);
+    if (!coll) {
       this.position.y = next.y;
     } else {
       if (delta.y < 0) {
         this.isGrounded = true;
+        this.position.y = coll.max.y + 0.05;
         this.velocity.y = 0;
       } else {
         this.velocity.y = 0;
@@ -107,29 +130,41 @@ export class PlayerController {
 
   update(dt: number, camera: THREE.Camera) {
     this.input.update();
+    this.vaultCooldown = Math.max(0, this.vaultCooldown - dt);
 
-    // look
     const look = this.input.consumeLook();
-    this.yaw -= look.x * (this.isAiming ? 0.6 : 1.0);
-    this.pitch += look.y * (this.isAiming ? 0.6 : 1.0);
-    this.pitch = THREE.MathUtils.clamp(this.pitch, -1.4, 1.4);
+    const sens = this.isAiming ? 0.5 : 1.0;
+    this.yaw -= look.x * sens;
+    this.pitch += look.y * sens;
+    this.pitch = THREE.MathUtils.clamp(this.pitch, -1.45, 1.45);
 
-    // stance
-    if (this.input.state.crouch) {
-      this.isCrouching = !this.isCrouching ? true : this.isCrouching; // toggle handled via press detection ideally
-    }
-    // For simplicity, hold to crouch: if key held, crouch
     const wantCrouch = this.input.state.crouch;
-    this.stance = wantCrouch ? 'crouch' : 'stand';
-    this.isCrouching = wantCrouch;
+    const wantSlide = wantCrouch && this.isSprinting && this.isGrounded && this.velocity.length() > 3.5;
 
-    // sprint
-    this.isSprinting = this.input.state.sprint && this.input.state.move.length() > 0.5 && !this.isCrouching && this.stats.stamina > 5;
+    if (wantSlide && !this.isSliding && this.slideTimer <= 0) {
+      this.isSliding = true;
+      this.slideTimer = 0.8;
+      this.moveState = 'slide';
+      audioManager.playProceduralSound('footstep');
+    }
 
-    // aiming
+    if (this.isSliding) {
+      this.slideTimer -= dt;
+      this.stance = 'crouch';
+      this.isCrouching = true;
+      if (this.slideTimer <= 0 || this.velocity.length() < 1.5) {
+        this.isSliding = false;
+        this.stance = wantCrouch ? 'crouch' : 'stand';
+        this.isCrouching = wantCrouch;
+      }
+    } else {
+      this.stance = wantCrouch ? 'crouch' : 'stand';
+      this.isCrouching = wantCrouch;
+    }
+
+    this.isSprinting = this.input.state.sprint && this.input.state.move.length() > 0.5 && !this.isCrouching && !this.isSliding && this.stats.stamina > 5;
     this.isAiming = this.input.state.aim;
 
-    // movement direction relative to camera yaw
     const moveInput = this.input.state.move;
     const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
     const right = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
@@ -138,91 +173,128 @@ export class PlayerController {
     moveDir.addScaledVector(right, moveInput.x);
     if (moveDir.lengthSq() > 0) moveDir.normalize();
 
-    // speed selection
     let targetSpeed = 0;
-    if (moveInput.lengthSq() > 0.01) {
+    if (this.isSliding) {
+      targetSpeed = this.slideSpeed * (this.slideTimer / 0.8);
+      moveDir.copy(forward);
+    } else if (moveInput.lengthSq() > 0.01) {
       if (this.isSprinting) targetSpeed = this.sprintSpeed;
       else if (this.isCrouching) targetSpeed = this.crouchSpeed;
       else if (moveInput.length() > 0.9) targetSpeed = this.jogSpeed;
       else targetSpeed = this.walkSpeed;
-      if (this.isAiming) targetSpeed *= 0.55;
+      if (this.isAiming) targetSpeed *= 0.52;
     }
 
-    // apply acceleration
-    const accel = this.isGrounded ? 18 : 6;
+    const accel = this.isGrounded ? (this.isSliding ? 2 : 20) : 7;
     const desiredVel = moveDir.multiplyScalar(targetSpeed);
-    this.velocity.x = THREE.MathUtils.lerp(this.velocity.x, desiredVel.x, accel * dt);
-    this.velocity.z = THREE.MathUtils.lerp(this.velocity.z, desiredVel.z, accel * dt);
+    if (!this.isSliding) {
+      this.velocity.x = THREE.MathUtils.lerp(this.velocity.x, desiredVel.x, accel * dt);
+      this.velocity.z = THREE.MathUtils.lerp(this.velocity.z, desiredVel.z, accel * dt);
+    } else {
+      this.velocity.x = THREE.MathUtils.lerp(this.velocity.x, desiredVel.x * 1.2, accel * dt);
+      this.velocity.z = THREE.MathUtils.lerp(this.velocity.z, desiredVel.z * 1.2, accel * dt);
+    }
 
-    // gravity
     if (!this.isGrounded) {
       this.velocity.y += this.gravity * dt;
     }
 
-    // jump
-    if (this.input.state.jump && (this.isGrounded || this.coyoteTimer > 0)) {
-      this.velocity.y = this.jumpForce;
-      this.isGrounded = false;
-      this.coyoteTimer = 0;
-      this.moveState = 'jump';
-      audioManager.playProceduralSound('footstep');
-    }
-
-    // coyote
-    if (this.isGrounded) this.coyoteTimer = this.coyoteTime;
-    else this.coyoteTimer -= dt;
-
-    // ground check ray
-    const groundCheckPos = this.position.clone();
-    groundCheckPos.y -= 0.1;
-    let grounded = false;
-    const checkBox = new THREE.Box3(
-      new THREE.Vector3(this.position.x - this.radius * 0.8, this.position.y - 0.2, this.position.z - this.radius * 0.8),
-      new THREE.Vector3(this.position.x + this.radius * 0.8, this.position.y + 0.1, this.position.z + this.radius * 0.8)
-    );
-    for (const c of this.colliders) {
-      if (checkBox.intersectsBox(c) && this.velocity.y <= 0.1) { grounded = true; break; }
-    }
-    if (this.position.y <= 0.05) { grounded = true; this.position.y = 0.05; }
-    this.isGrounded = grounded;
-    if (grounded && this.velocity.y < 0) this.velocity.y = 0;
-
-    // move
-    const delta = this.velocity.clone().multiplyScalar(dt);
-    this.moveWithCollision(delta, dt);
-
-    // stamina
-    if (this.isSprinting) {
-      this.stats.stamina = Math.max(0, this.stats.stamina - 22 * dt);
-      if (this.stats.stamina === 0) this.isSprinting = false;
-    } else {
-      this.stats.stamina = Math.min(this.stats.maxStamina, this.stats.stamina + 18 * dt);
-    }
-
-    // move state
-    const horizSpeed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.z * this.velocity.z);
-    if (!this.isGrounded) this.moveState = this.velocity.y > 0 ? 'jump' : 'fall';
-    else if (horizSpeed < 0.1) this.moveState = 'idle';
-    else if (this.isSprinting) this.moveState = 'sprint';
-    else if (this.isCrouching) this.moveState = 'crouch_walk';
-    else if (horizSpeed > 3.5) this.moveState = 'jog';
-    else this.moveState = 'walk';
-
-    // footsteps
-    if (horizSpeed > 0.5 && this.isGrounded) {
-      this.footstepTimer -= dt * horizSpeed;
-      if (this.footstepTimer <= 0) {
-        this.footstepTimer = this.isSprinting ? 0.32 : this.isCrouching ? 0.7 : 0.45;
-        if (!this.isCrouching || Math.random() > 0.5) audioManager.playProceduralSound('footstep');
+    if (this.input.state.jump) {
+      if (this.isSliding) {
+        // Slide jump
+        this.isSliding = false;
+        this.velocity.y = this.jumpForce * 0.9;
+        this.velocity.x *= 1.15;
+        this.velocity.z *= 1.15;
+        this.isGrounded = false;
+        this.moveState = 'jump';
+        audioManager.playProceduralSound('footstep');
+      } else if (this.isGrounded || this.coyoteTimer > 0) {
+        // Check vault first
+        const vault = this.canVault();
+        if (vault.can && this.vaultCooldown <= 0 && moveInput.length() > 0.3) {
+          // Vault
+          this.position.y += vault.height + 0.2;
+          this.velocity.y = 2.5;
+          this.velocity.x += forward.x * 2.5;
+          this.velocity.z += forward.z * 2.5;
+          this.moveState = vault.height > 1.0 ? 'mantle' : 'vault';
+          this.vaultCooldown = 0.6;
+          audioManager.playProceduralSound('footstep');
+          console.log('[Player] Vault', vault.height.toFixed(2));
+        } else {
+          this.velocity.y = this.jumpForce;
+          this.isGrounded = false;
+          this.coyoteTimer = 0;
+          this.moveState = 'jump';
+          audioManager.playProceduralSound('footstep');
+        }
       }
     }
 
-    // update mesh position
+    if (this.isGrounded) this.coyoteTimer = this.coyoteTime;
+    else this.coyoteTimer -= dt;
+
+    let grounded = false;
+    const checkBox = new THREE.Box3(
+      new THREE.Vector3(this.position.x - this.radius * 0.8, this.position.y - 0.25, this.position.z - this.radius * 0.8),
+      new THREE.Vector3(this.position.x + this.radius * 0.8, this.position.y + 0.15, this.position.z + this.radius * 0.8)
+    );
+    for (const c of this.colliders) {
+      if (checkBox.intersectsBox(c) && this.velocity.y <= 0.2) { grounded = true; break; }
+    }
+    if (this.position.y <= 0.06) { grounded = true; this.position.y = 0.06; }
+    
+    if (!this.wasGrounded && grounded) {
+      // Landing
+      const fallSpeed = Math.abs(this.velocity.y);
+      if (fallSpeed > 8) {
+        audioManager.playProceduralSound('hit');
+        // Fall damage
+        if (fallSpeed > 12) this.takeDamage((fallSpeed - 12) * 4);
+      } else {
+        audioManager.playProceduralSound('footstep');
+      }
+      if (fallSpeed > 3) {
+        this.moveState = 'landing' as any;
+      }
+    }
+    
+    this.wasGrounded = this.isGrounded;
+    this.isGrounded = grounded;
+    if (grounded && this.velocity.y < 0) this.velocity.y = 0;
+
+    const delta = this.velocity.clone().multiplyScalar(dt);
+    this.moveWithCollision(delta, dt);
+
+    if (this.isSprinting) {
+      this.stats.stamina = Math.max(0, this.stats.stamina - 24 * dt);
+      if (this.stats.stamina === 0) this.isSprinting = false;
+    } else {
+      this.stats.stamina = Math.min(this.stats.maxStamina, this.stats.stamina + 20 * dt);
+    }
+
+    const horizSpeed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.z * this.velocity.z);
+    if (!this.isGrounded) this.moveState = this.velocity.y > 0.5 ? 'jump' : 'fall';
+    else if (this.isSliding) this.moveState = 'slide';
+    else if (horizSpeed < 0.15) this.moveState = 'idle';
+    else if (this.isSprinting) this.moveState = 'sprint';
+    else if (this.isCrouching) this.moveState = 'crouch_walk';
+    else if (horizSpeed > 3.8) this.moveState = 'jog';
+    else this.moveState = 'walk';
+
+    if (horizSpeed > 0.5 && this.isGrounded && !this.isSliding) {
+      this.footstepTimer -= dt * horizSpeed;
+      if (this.footstepTimer <= 0) {
+        this.footstepTimer = this.isSprinting ? 0.30 : this.isCrouching ? 0.68 : 0.42;
+        if (!this.isCrouching || Math.random() > 0.45) audioManager.playProceduralSound('footstep');
+      }
+    }
+
     this.mesh.position.copy(this.position);
     this.mesh.rotation.y = this.yaw;
 
-    // camera target (for camera system to use)
-    const h = this.stance === 'crouch' ? 0.9 : 1.65;
+    const h = this.isSliding ? 0.5 : this.stance === 'crouch' ? 0.95 : 1.68;
     this.cameraTarget.set(this.position.x, this.position.y + h, this.position.z);
   }
 
@@ -231,7 +303,7 @@ export class PlayerController {
   takeDamage(amount: number) {
     let remaining = amount;
     if (this.stats.armor > 0) {
-      const absorbed = Math.min(this.stats.armor, remaining * 0.6);
+      const absorbed = Math.min(this.stats.armor, remaining * 0.62);
       this.stats.armor -= absorbed;
       remaining -= absorbed;
     }
@@ -242,6 +314,10 @@ export class PlayerController {
 
   heal(amount: number) {
     this.stats.health = Math.min(this.stats.maxHealth, this.stats.health + amount);
+  }
+
+  addArmor(amount: number) {
+    this.stats.armor = Math.min(100, this.stats.armor + amount);
   }
 
   getPosition() { return this.position.clone(); }

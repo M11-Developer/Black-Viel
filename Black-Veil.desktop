@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=BLACK VEIL
+Comment=THE CITY FORGOT. YOU DIDN'T. - Cinematic 3D Tactical Action
+Exec=bash -c "cd %k/.. && ./Black-Veil.sh"
+Icon=applications-games
+Terminal=true
+Type=Application
+Categories=Game;ActionGame;
+Keywords=black veil;game;3d;shooter;stealth;
+StartupNotify=true
+Path=
