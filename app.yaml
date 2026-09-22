@@ -1,0 +1,11 @@
+kind: wasmer.io/App.v0
+name: black-veil
+owner: m11-dev
+package:
+  name: m11-dev/black-veil
+  version: 1.2.0
+
+# Domains - Wasmer will give you https://black-veil-m11-dev.wasmer.app
+# You can add custom domain later in dashboard
+
+# For static site, no env vars needed

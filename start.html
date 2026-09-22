@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLACK VEIL — Launcher</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050508;color:#e8e8ec;font-family:monospace;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:rgba(15,15,20,0.9);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px;max-width:480px;width:100%;backdrop-filter:blur(20px)}
+h1{font-family:Orbitron,sans-serif;font-size:24px;letter-spacing:0.12em;text-align:center}
+h1 span{color:#6aa6ff}
+.status{display:flex;align-items:center;gap:8px;justify-content:center;margin:16px 0;background:rgba(0,0,0,0.5);padding:8px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.08)}
+.dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80}
+.btn{width:100%;background:linear-gradient(135deg,#6aa6ff,#8b5cf6);border:none;border-radius:12px;padding:14px;color:#fff;font-weight:700;letter-spacing:0.1em;cursor:pointer;margin:8px 0}
+.btn:active{transform:scale(0.98)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.btn2{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px;color:#e8e8ec;cursor:pointer;font-size:11px}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>BLACK <span>VEIL</span></h1>
+<p style="text-align:center;opacity:0.6;font-size:10px;margin-top:6px;letter-spacing:0.2em">THE CITY FORGOT. YOU DIDN'T.</p>
+<div class="status" id="status"><div class="dot" id="dot"></div><span id="txt">Checking server...</span></div>
+<button class="btn" onclick="launch()">▶ PLAY NOW</button>
+<div class="grid">
+<button class="btn2" onclick="launch('http://localhost:4173')">Local 4173</button>
+<button class="btn2" onclick="launch('http://localhost:5173')">Dev 5173</button>
+<button class="btn2" onclick="location.href='./mobile.html'">Mobile 📱</button>
+<button class="btn2" onclick="location.href='./index.html'">Game 🎮</button>
+</div>
+<p style="text-align:center;opacity:0.4;font-size:9px;margin-top:16px">M11 Dev — @m11-dev • GitHub: M11-Developer/Black-Viel<br>One-click: Black-Veil.bat (Win) / Black-Veil.sh (Mac/Linux) / node launch.mjs</p>
+</div>
+<script>
+async function check(u){
+ try{const c=new AbortController();setTimeout(()=>c.abort(),2000);await fetch(u,{method:'HEAD',signal:c.signal,mode:'no-cors'});return true;}catch{return false;}
+}
+async function update(){
+ const urls=['https://M11-Developer.github.io/Black-Viel/','http://localhost:4173','http://localhost:5173'];
+ for(let url of urls){ if(await check(url)){ document.getElementById('txt').textContent='Ready ✓ '+url; document.getElementById('dot').style.background='#4ade80'; return url; } }
+ document.getElementById('txt').textContent='Offline — will open GitHub Pages'; document.getElementById('dot').style.background='#f87171'; return urls[0];
+}
+function launch(u){
+ const target=u||'https://M11-Developer.github.io/Black-Viel/';
+ if(navigator.vibrate) navigator.vibrate(30);
+ location.href=target;
+}
+update(); setInterval(update,4000);
+if(new URLSearchParams(location.search).get('auto')==='1') setTimeout(()=>launch(),800);
+</script>
+</body>
+</html>

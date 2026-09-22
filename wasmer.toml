@@ -1,0 +1,22 @@
+[package]
+name = "m11-dev/black-veil"
+version = "1.2.0"
+description = "BLACK VEIL - THE CITY FORGOT. YOU DIDN'T. Cinematic 3D tactical stealth action, one-tap mobile, PWA, M11 Dev"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/M11-Developer/Black-Viel"
+
+[dependencies]
+"sharrattj/static-web-server" = "1"
+
+[fs]
+public = "dist"
+
+[[command]]
+name = "black-veil"
+module = "sharrattj/static-web-server"
+runner = "https://webc.org/run/sharrattj/static-web-server@1.0.0"
+
+[command.config]
+# Serve SPA fallback to index.html
+args = ["--root", "dist", "--spa", "--port", "8080"]

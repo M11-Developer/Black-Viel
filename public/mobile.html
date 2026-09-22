@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#050508">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BLACK VEIL">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon-192.png">
+<title>BLACK VEIL — Mobile One-Click</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050508;--card:#0f0f14;--border:rgba(255,255,255,0.08);--accent:#6aa6ff;--accent2:#ff4d6a;--text:#e8e8ec;--dim:rgba(232,232,236,0.55)}
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;min-height:100vh;overflow-x:hidden;position:relative}
+.bg{position:fixed;inset:0;z-index:-1}
+.bg img{width:100%;height:100%;object-fit:cover;opacity:0.35}
+.bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%, rgba(106,166,255,0.15), transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(255,77,106,0.12), transparent 50%), linear-gradient(180deg, rgba(5,5,8,0.3), rgba(5,5,8,0.95))}
+.container{max-width:480px;margin:0 auto;padding:20px 16px 100px;position:relative;z-index:1}
+.header{text-align:center;padding:24px 0 16px}
+.logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:28px;letter-spacing:0.12em;color:var(--text);text-shadow:0 0 20px rgba(106,166,255,0.5)}
+.logo span{color:var(--accent)}
+.tagline{font-size:10px;letter-spacing:0.2em;opacity:0.6;margin-top:6px}
+.status{display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(0,0,0,0.6);border:1px solid var(--border);border-radius:20px;padding:8px 14px;margin:16px auto;width:fit-content;backdrop-filter:blur(12px)}
+.dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;animation:pulse 2s infinite}
+.dot.off{background:#f87171;box-shadow:0 0 8px #f87171}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.play-btn{width:100%;background:linear-gradient(135deg, var(--accent), #8b5cf6);border:none;border-radius:16px;padding:18px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;font-size:16px;letter-spacing:0.1em;cursor:pointer;position:relative;overflow:hidden;margin:20px 0 12px;box-shadow:0 8px 24px rgba(106,166,255,0.3);transition:all 0.2s}
+.play-btn:active{transform:scale(0.98)}
+.play-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg, rgba(255,255,255,0.15), transparent);opacity:0;transition:opacity 0.2s}
+.play-btn:hover::before{opacity:1}
+.play-btn small{display:block;font-family:'JetBrains Mono',monospace;font-weight:400;font-size:10px;opacity:0.8;margin-top:4px;letter-spacing:0.05em}
+.card{background:rgba(15,15,20,0.85);border:1px solid var(--border);border-radius:16px;padding:16px;margin:12px 0;backdrop-filter:blur(20px)}
+.card h3{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:0.15em;opacity:0.9;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card h3 i{font-style:normal}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:12px;padding:12px 10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;text-align:center;transition:all 0.15s;backdrop-filter:blur(8px)}
+.btn:active{background:rgba(106,166,255,0.15);border-color:rgba(106,166,255,0.3);transform:scale(0.97)}
+.btn.primary{background:rgba(106,166,255,0.12);border-color:rgba(106,166,255,0.25)}
+.btn .icon{font-size:18px;display:block;margin-bottom:4px}
+.list{list-style:none}
+.list li{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px;line-height:1.5}
+.list li:last-child{border:none}
+.list .check{width:18px;height:18px;border-radius:50%;background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;color:#4ade80;flex-shrink:0}
+.install-banner{background:linear-gradient(135deg, rgba(106,166,255,0.12), rgba(139,92,246,0.12));border:1px solid rgba(106,166,255,0.2);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin:12px 0}
+.install-banner .icon{width:40px;height:40px;border-radius:10px;background:rgba(106,166,255,0.15);display:flex;align-items:center;justify-content:center;font-size:20px}
+.install-banner .txt{flex:1}
+.install-banner .txt b{font-size:12px;display:block}
+.install-banner .txt span{font-size:10px;opacity:0.6}
+.controls-preview{display:flex;gap:8px;overflow-x:auto;padding:8px 0;scrollbar-width:none}
+.controls-preview::-webkit-scrollbar{display:none}
+.ctrl{flex-shrink:0;width:64px;text-align:center}
+.ctrl .box{width:48px;height:48px;border-radius:10px;background:rgba(0,0,0,0.5);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 6px;font-size:12px}
+.ctrl span{font-size:8px;opacity:0.6}
+.fab{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);border:1px solid var(--border);border-radius:24px;padding:10px 18px;display:flex;align-items:center;gap:12px;backdrop-filter:blur(20px);z-index:10;font-size:10px}
+.fab a{color:var(--accent);text-decoration:none}
+.divider{height:1px;background:var(--border);margin:12px 0}
+.hint{background:rgba(255,193,7,0.08);border:1px solid rgba(255,193,7,0.15);border-radius:10px;padding:10px 12px;font-size:10px;line-height:1.6;color:#fbbf24;margin:10px 0}
+.hint b{color:#fcd34d}
+</style>
+</head>
+<body>
+<div class="bg"><img src="./public/assets/mobile/background.png" onerror="this.style.display='none'" alt=""></div>
+<div class="container">
+  <div class="header">
+    <div class="logo">BLACK <span>VEIL</span></div>
+    <div class="tagline">THE CITY FORGOT. YOU DIDN'T.</div>
+    <div class="status" id="status"><div class="dot" id="dot"></div><span id="statusText">جاري فحص السيرفر...</span></div>
+  </div>
+
+  <button class="play-btn" id="playBtn" onclick="launchGame()">
+    ▶ العب الآن — ضغطة واحدة
+    <small>One-Click Play • No Termux • No Setup</small>
+  </button>
+
+  <div class="install-banner" id="installBanner" style="display:none">
+    <div class="icon">📲</div>
+    <div class="txt"><b>ثبت اللعبة على الشاشة الرئيسية</b><span>Install to home screen for full-screen + offline</span></div>
+    <button class="btn primary" style="width:auto;padding:8px 14px" id="installBtn">تثبيت</button>
+  </div>
+
+  <div class="card">
+    <h3><i>🎮</i> ازاي تلعب على الموبايل بدون Termux</h3>
+    <ul class="list">
+      <li><div class="check">✓</div><span><b>افتح الصفحة دي في Chrome</b> — مش مدير الملفات. Chrome بيدعم PWA</span></li>
+      <li><div class="check">✓</div><span>دوس <b>العب الآن</b> — اللعبة هتفتح من السيرفر <code>https://M11-Developer.github.io/Black-Viel/</code></span></li>
+      <li><div class="check">✓</div><span>لو عايز Offline: دوس <b>تثبيت</b> فوق — هتتثبت كأيقونة زي أي تطبيق</span></li>
+      <li><div class="check">✓</div><span>بعد التثبيت، افتحها من الشاشة الرئيسية — Fullscreen + 60FPS</span></li>
+    </ul>
+    <div class="hint"><b>💡 ملاحظة:</b> لو فتحت الملف من مدير الملفات مباشرة، Chrome هيمنع الـ ES Modules. لازم تفتحه عبر <b>http</b> — يا من GitHub Pages يا من سيرفر محلي. الصفحة دي بتحل المشكلة بتحميل اللعبة من السيرفر تلقائياً.</div>
+  </div>
+
+  <div class="card">
+    <h3><i>📱</i> تحكم موبايل مطور</h3>
+    <div class="controls-preview">
+      <div class="ctrl"><div class="box">🕹️</div><span>حركة<br>Joystick</span></div>
+      <div class="ctrl"><div class="box">👁️</div><span>كاميرا<br>سحب يمين</span></div>
+      <div class="ctrl"><div class="box">🔥</div><span>ضرب<br>FIRE</span></div>
+      <div class="ctrl"><div class="box">🎯</div><span>تصويب<br>AIM</span></div>
+      <div class="ctrl"><div class="box">🦆</div><span>انحناء<br>Crouch</span></div>
+      <div class="ctrl"><div class="box">🦘</div><span>قفز<br>Jump</span></div>
+      <div class="ctrl"><div class="box">📦</div><span>تفاعل<br>Interact</span></div>
+      <div class="ctrl"><div class="box">📸</div><span>صورة<br>Photo P</span></div>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <button class="btn" onclick="testGyro()"><span class="icon">📳</span>اختبار الجيروسكوب<br><small style="opacity:0.5">Gyro Test</small></button>
+      <button class="btn" onclick="testHaptics()"><span class="icon">📳</span>اختبار الاهتزاز<br><small style="opacity:0.5">Haptics Test</small></button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><i>🚀</i> تشغيل سريع</h3>
+    <div class="grid">
+      <button class="btn primary" onclick="launchGame('https://M11-Developer.github.io/Black-Viel/')"><span class="icon">🌐</span>العب Online<br><small>GitHub Pages</small></button>
+      <button class="btn" onclick="launchGame('http://localhost:4173')"><span class="icon">💻</span>Local 4173<br><small>لو مشغل سيرفر</small></button>
+      <button class="btn" onclick="launchGame('http://localhost:5173')"><span class="icon">⚡</span>Dev 5173<br><small>Vite Dev</small></button>
+      <button class="btn" onclick="location.href='./index.html'"><span class="icon">🎮</span>افتح index.html<br><small>مباشر</small></button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><i>🎨</i> Skins & Textures الجديدة</h3>
+    <ul class="list">
+      <li><div class="check">🎭</div><span>Player: Black Veil tactical hood + glowing visor</span></li>
+      <li><div class="check">👮</div><span>Security: Helix corporate guard</span></li>
+      <li><div class="check">🏃</div><span>Scout: Ashen scavenger runner</span></li>
+      <li><div class="check">🦍</div><span>Heavy: Vanguard juggernaut armor</span></li>
+      <li><div class="check">🎯</div><span>Sniper: Veil phantom cloak</span></li>
+      <li><div class="check">🐺</div><span>Hunter: Ghillie tracker</span></li>
+      <li><div class="check">👑</div><span>Commander: Helix elite officer</span></li>
+      <li><div class="check">🧱</div><span>Textures: Concrete, Metal, Fabric PBR</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><i>⚙️</i> تحسينات موبايل v1.2</h3>
+    <ul class="list">
+      <li><div class="check">✓</div><span>Touch joystick + look area + 8 action buttons + edit layout</span></li>
+      <li><div class="check">✓</div><span>Gyro aim + haptics feedback + auto fullscreen</span></li>
+      <li><div class="check">✓</div><span>PWA installable, offline cache 748KB, standalone display</span></li>
+      <li><div class="check">✓</div><span>Adaptive quality: 60FPS desktop, 45-60 mobile AUTO</span></li>
+      <li><div class="check">✓</div><span>One-click mobile.html — no Termux, no bash, just tap PLAY</span></li>
+      <li><div class="check">✓</div><span>Photo mode P, slide, vault/mantle, safehouse, security system</span></li>
+    </ul>
+  </div>
+
+  <div class="divider"></div>
+  <div style="text-align:center;font-size:9px;opacity:0.4;line-height:1.6">
+    BLACK VEIL v1.2 Mobile One-Click<br>
+    M11 Dev — YouTube: @m11-dev (Primary)<br>
+    GitHub: M11-Developer/Black-Viel<br>
+    THE CITY FORGOT. YOU DIDN'T.
+  </div>
+</div>
+
+<div class="fab">
+  <span>🌐 Server: <a href="https://M11-Developer.github.io/Black-Viel/" target="_blank">Play Online</a></span>
+  <span style="opacity:0.3">|</span>
+  <span>📂 <a href="https://github.com/M11-Developer/Black-Viel" target="_blank">GitHub</a></span>
+</div>
+
+<script>
+let deferredPrompt = null;
+const statusEl = document.getElementById('statusText');
+const dotEl = document.getElementById('dot');
+const installBanner = document.getElementById('installBanner');
+
+async function checkServer(url) {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(()=>ctrl.abort(), 2500);
+    const res = await fetch(url, {method:'HEAD', signal:ctrl.signal, mode:'no-cors'});
+    clearTimeout(t);
+    return true;
+  } catch { return false; }
+}
+
+async function updateStatus() {
+  const servers = [
+    'https://M11-Developer.github.io/Black-Viel/',
+    'http://localhost:4173',
+    'http://localhost:5173'
+  ];
+  for (let url of servers) {
+    const ok = await checkServer(url);
+    if (ok) {
+      statusEl.textContent = 'السيرفر جاهز ✓ — ' + url;
+      dotEl.classList.remove('off');
+      return url;
+    }
+  }
+  statusEl.textContent = 'السيرفر مش شغال — هيفتح Online';
+  dotEl.classList.add('off');
+  return servers[0];
+}
+
+function launchGame(url) {
+  const target = url || 'https://M11-Developer.github.io/Black-Viel/';
+  // Haptics
+  if (navigator.vibrate) navigator.vibrate(30);
+  // Try fullscreen
+  try { document.documentElement.requestFullscreen?.(); } catch {}
+  // Open game
+  if (target.startsWith('http')) {
+    // If mobile, open in same tab for PWA feel, else new tab
+    if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+      location.href = target;
+    } else {
+      window.open(target, '_blank');
+    }
+  } else {
+    location.href = target;
+  }
+}
+
+function testGyro() {
+  if (!('DeviceOrientationEvent' in window)) { alert('الجهاز لا يدعم الجيروسكوب'); return; }
+  const Doe = DeviceOrientationEvent;
+  if (Doe.requestPermission) {
+    Doe.requestPermission().then(p=>{
+      if(p==='granted'){ alert('تم تفعيل الجيروسكوب ✓ حرك الموبايل للتصويب'); window.addEventListener('deviceorientation', e=>{ console.log(e.gamma, e.beta); }, {once:true}); }
+      else alert('تم رفض الإذن');
+    });
+  } else {
+    alert('الجيروسكوب جاهز ✓ حرك الموبايل — سيتم استخدامه للتصويب في اللعبة');
+    if (navigator.vibrate) navigator.vibrate([30,50,30]);
+  }
+}
+
+function testHaptics() {
+  if (navigator.vibrate) { navigator.vibrate([50,30,50,30,100]); alert('اهتزاز ✓ Haptics working'); }
+  else alert('الجهاز لا يدعم الاهتزاز');
+}
+
+// PWA install
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  installBanner.style.display = 'flex';
+});
+
+document.getElementById('installBtn')?.addEventListener('click', async ()=>{
+  if (!deferredPrompt) { alert('افتح في Chrome واضغط ⋮ > Add to Home screen'); return; }
+  deferredPrompt.prompt();
+  const {outcome} = await deferredPrompt.userChoice;
+  if (outcome==='accepted') installBanner.style.display='none';
+  deferredPrompt = null;
+});
+
+window.addEventListener('appinstalled', ()=>{ installBanner.style.display='none'; statusEl.textContent='تم التثبيت ✓ افتح من الشاشة الرئيسية'; });
+
+// Init
+updateStatus();
+setInterval(updateStatus, 5000);
+
+// Register SW for offline
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+// Handle ?auto=1
+if (new URLSearchParams(location.search).get('auto')==='1') {
+  setTimeout(()=>launchGame(), 800);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#050508">
+<title>BLACK VEIL — One Tap Play (Mobile)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050508;color:#e8e8ec;font-family:monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:20px}
+h1{font-family:Orbitron,sans-serif;font-size:32px;letter-spacing:0.12em;margin-bottom:8px}
+h1 span{color:#6aa6ff}
+p{opacity:0.6;font-size:12px;max-width:320px;line-height:1.6;margin:8px 0}
+.btn{margin-top:20px;background:linear-gradient(135deg,#6aa6ff,#8b5cf6);border:none;border-radius:16px;padding:18px 32px;color:#fff;font-weight:700;font-size:16px;letter-spacing:0.1em;cursor:pointer;box-shadow:0 8px 24px rgba(106,166,255,0.3);width:100%;max-width:320px}
+.btn:active{transform:scale(0.98)}
+.small{font-size:10px;opacity:0.5;margin-top:16px}
+a{color:#6aa6ff;text-decoration:none}
+</style>
+</head>
+<body>
+<h1>BLACK <span>VEIL</span></h1>
+<p>THE CITY FORGOT. YOU DIDN'T.</p>
+<p>One-Tap Mobile • No Termux • No Setup • PWA Ready</p>
+<button class="btn" onclick="play()">▶ PLAY NOW — ضغطة واحدة</button>
+<p class="small">If file:// blocked, this page auto-redirects to GitHub Pages server.<br>For offline, Add to Home Screen.</p>
+<p class="small"><a href="https://M11-Developer.github.io/Black-Viel/" target="_blank">🌐 Play Online</a> | <a href="https://github.com/M11-Developer/Black-Viel" target="_blank">GitHub</a> | <a href="./mobile.html">Mobile Launcher</a></p>
+<script>
+function play(){
+  if(navigator.vibrate) navigator.vibrate(30);
+  try{document.documentElement.requestFullscreen?.()}catch{}
+  // Try local dist first, then github pages
+  const isFile = location.protocol === 'file:';
+  if(isFile){
+    // File:// cannot load ES modules, redirect to GitHub Pages
+    location.href = 'https://M11-Developer.github.io/Black-Viel/';
+  } else {
+    // Try to detect local server, else github
+    fetch('./dist/index.html',{method:'HEAD'}).then(()=>location.href='./dist/index.html').catch(()=>location.href='https://M11-Developer.github.io/Black-Viel/');
+  }
+}
+if(new URLSearchParams(location.search).get('auto')==='1') setTimeout(play,500);
+</script>
+</body>
+</html>
