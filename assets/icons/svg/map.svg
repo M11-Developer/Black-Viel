@@ -1,0 +1,26 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0f14"/>
+      <stop offset="100%" stop-color="#050508"/>
+    </linearGradient>
+    <linearGradient id="mapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6aa6ff"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+  <rect x="2" y="2" width="508" height="508" rx="126" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+  <g filter="url(#glow)" transform="translate(64, 64)">
+    <path d="M32 80 L32 320 L128 272 L256 320 L352 272 L352 32 L256 80 L128 32 Z" fill="none" stroke="url(#mapGrad)" stroke-width="8" stroke-linejoin="round"/>
+    <line x1="128" y1="32" x2="128" y2="272" stroke="rgba(106,166,255,0.4)" stroke-width="3" stroke-dasharray="12 8"/>
+    <line x1="256" y1="80" x2="256" y2="320" stroke="rgba(106,166,255,0.4)" stroke-width="3" stroke-dasharray="12 8"/>
+    <circle cx="128" cy="160" r="16" fill="#4ade80" stroke="#fff" stroke-width="2"/>
+    <circle cx="256" cy="200" r="20" fill="#ff4d6a" stroke="#fff" stroke-width="2"/>
+    <circle cx="192" cy="120" r="12" fill="#fbbf24" stroke="#fff" stroke-width="2"/>
+  </g>
+</svg>
