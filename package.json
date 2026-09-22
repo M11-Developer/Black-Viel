@@ -1,8 +1,8 @@
 {
   "name": "black-veil",
-  "version": "1.0.0",
+  "version": "1.4.0",
   "type": "module",
-  "description": "BLACK VEIL - Cinematic 3D third-person action game - THE CITY FORGOT. YOU DIDN'T.",
+  "description": "BLACK VEIL v1.4.0 FINAL - Cinematic 3D tactical shooter, multiplayer, 6 modes, AI, story per player, AAA animation, realism, 23 textures, 30 SVG icons, 55 PNG assets, Wasmer ready",
   "main": "electron/main.cjs",
   "homepage": "./",
   "scripts": {

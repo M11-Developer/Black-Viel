@@ -1,0 +1,26 @@
+<svg width="512" height="512" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0f14"/>
+      <stop offset="100%" stop-color="#050508"/>
+    </linearGradient>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6aa6ff"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="0.8" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <radialGradient id="shine" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.25)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+  </defs>
+  <rect width="24" height="24" rx="6" fill="url(#bg)"/>
+  <rect x="0.5" y="0.5" width="23" height="23" rx="5.5" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+  <g filter="url(#glow)" transform="translate(0,0)">
+    <path d="M14.5 4 H9.5 L7 7 H4 A2 2 0 0 0 2 9 V19 A2 2 0 0 0 4 21 H20 A2 2 0 0 0 22 19 V9 A2 2 0 0 0 20 7 H17 L14.5 4 Z" fill="none" stroke="url(#grad)" stroke-width="3" stroke-linejoin="round"/><circle cx="12" cy="14" r="5" fill="none" stroke="url(#grad)" stroke-width="3"/><circle cx="12" cy="14" r="2" fill="url(#grad)"/>
+    
+  </g>
+</svg>

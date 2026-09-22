@@ -125,12 +125,24 @@ export class AIController {
 
     // Apply movement
     this.position.add(this.velocity.clone().multiplyScalar(dt));
-    this.position.y = 0; // keep grounded for simplicity
+    this.position.y = 0;
     this.character.setPosition(this.position);
     if (this.targetPos || this.memory.lastKnownPlayerPos) {
       const lookTarget = this.state === 'combat' || this.state === 'alerted' ? playerPos : (this.targetPos || this.memory.lastKnownPlayerPos!);
       this.character.lookAt(lookTarget);
     }
+
+    // Map AI state to anim state for realistic animation
+    let animState: any = 'idle';
+    if (this.state === 'patrol') animState = this.velocity.length() > 0.1 ? 'patrol' : 'idle';
+    else if (this.state === 'suspicious') animState = 'alert';
+    else if (this.state === 'investigating') animState = 'search';
+    else if (this.state === 'alerted') animState = 'alert';
+    else if (this.state === 'combat') animState = this.velocity.length() > 0.5 ? 'chase' : 'attack';
+    else if (this.state === 'searching') animState = 'search';
+    else if (this.state === 'lost') animState = 'idle';
+    this.character.setAnimState(animState);
+    this.character.update(dt);
   }
 
   private canSeePlayer(playerPos: THREE.Vector3, colliders: THREE.Box3[], dist: number): boolean {

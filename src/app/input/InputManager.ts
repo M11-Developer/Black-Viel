@@ -5,6 +5,8 @@ export interface InputState {
   look: THREE.Vector2;
   sprint: boolean;
   crouch: boolean;
+  prone: boolean;
+  lean: number; // -1 left, 1 right
   jump: boolean;
   fire: boolean;
   aim: boolean;
@@ -24,6 +26,8 @@ export class InputManager {
     look: new THREE.Vector2(),
     sprint: false,
     crouch: false,
+    prone: false,
+    lean: 0,
     jump: false,
     fire: false,
     aim: false,
@@ -54,9 +58,9 @@ export class InputManager {
       this.keys.add(e.code.toLowerCase());
       if (e.code === 'KeyR') this.state.reload = true;
       if (e.code === 'KeyF') this.state.interact = true;
-      if (e.code === 'KeyE') this.state.interact = true;
       if (e.code === 'Space') this.state.jump = true;
       if (e.code === 'ControlLeft' || e.code === 'KeyC') this.state.crouch = true;
+      if (e.code === 'KeyZ' || e.code === 'KeyX') this.state.prone = true;
       if (e.code === 'ShiftLeft') this.state.sprint = true;
       if (e.code === 'KeyV') this.state.melee = true;
       if (e.code === 'Tab') this.state.inventory = true;
@@ -64,13 +68,24 @@ export class InputManager {
       if (e.code === 'Escape') this.state.pause = true;
       if (e.code === 'Digit1') this.state.switchWeapon = -1;
       if (e.code === 'Digit2') this.state.switchWeapon = 1;
+      // Lean Q/E - realistic tactical lean
+      if (e.code === 'KeyQ') this.state.lean = -1;
+      if (e.code === 'KeyE') this.state.lean = 1;
     });
     window.addEventListener('keyup', (e) => {
       this.keys.delete(e.code.toLowerCase());
       if (e.code === 'KeyR') this.state.reload = false;
-      if (e.code === 'KeyF' || e.code === 'KeyE') this.state.interact = false;
+      if (e.code === 'KeyF') this.state.interact = false;
+      if (e.code === 'KeyE') {
+        this.state.interact = false;
+        if (this.state.lean === 1) this.state.lean = 0;
+      }
+      if (e.code === 'KeyQ') {
+        if (this.state.lean === -1) this.state.lean = 0;
+      }
       if (e.code === 'Space') this.state.jump = false;
       if (e.code === 'ControlLeft' || e.code === 'KeyC') this.state.crouch = false;
+      if (e.code === 'KeyZ' || e.code === 'KeyX') this.state.prone = false;
       if (e.code === 'ShiftLeft') this.state.sprint = false;
       if (e.code === 'KeyV') this.state.melee = false;
       if (e.code === 'Tab') this.state.inventory = false;

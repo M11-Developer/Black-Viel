@@ -672,9 +672,9 @@ export class Game {
       this.playerController.update(dt, this.renderer.camera);
       this.playerCharacter.group.position.copy(this.playerController.position);
       this.playerCharacter.group.rotation.y = this.playerController.yaw;
-      this.playerCharacter.update(dt, this.playerController.moveState, this.playerController.yaw);
+      this.playerCharacter.update(dt, this.playerController.moveState, this.playerController.yaw, this.playerController.getVelocity());
 
-      this.cameraSystem.update(dt, this.playerController.getCameraTarget(), this.playerController.yaw, this.playerController.pitch, this.playerController.isAiming, this.playerController.isCrouching);
+      this.cameraSystem.update(dt, this.playerController.getCameraTarget(), this.playerController.yaw, this.playerController.pitch, this.playerController.isAiming, this.playerController.isCrouching, this.playerController.moveState, this.playerController.getVelocity(), this.playerController.getLean());
 
       this.weaponSystem.update(dt);
       this.handleShooting(dt);
