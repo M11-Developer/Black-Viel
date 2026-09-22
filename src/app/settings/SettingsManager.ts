@@ -22,6 +22,7 @@ export interface GameSettings {
   gyroEnabled: boolean;
   gyroSensitivity: number;
   vibration: boolean;
+  hapticsEnabled: boolean;
   subtitles: boolean;
   subtitleSize: number;
   language: 'en' | 'ar';
@@ -49,6 +50,7 @@ const DEFAULTS: GameSettings = {
   gyroEnabled: false,
   gyroSensitivity: 1,
   vibration: true,
+  hapticsEnabled: true,
   subtitles: true,
   subtitleSize: 1,
   language: 'en',
