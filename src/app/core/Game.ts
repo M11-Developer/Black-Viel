@@ -16,6 +16,7 @@ import { saveManager } from '../save/SaveManager';
 import { settingsManager } from '../settings/SettingsManager';
 import { audioManager } from '../audio/AudioManager';
 import { assetLoader } from './AssetLoader';
+import { textureManager } from './TextureManager';
 import { VFXSystem } from '../vfx/VFXSystem';
 import { SecuritySystem } from '../world/SecuritySystem';
 import { achievementManager } from '../progression/AchievementManager';
@@ -150,14 +151,16 @@ export class Game {
     ];
 
     const tasks = [
+      { id: 'textures', label: 'LOADING TEXTURES — concrete, metal, fabric PBR + 7 character skins', duration: 600 },
       { id: 'world', label: 'BUILDING VEYRA DISTRICTS — 7 zones, safehouse, security grid', duration: 700 },
-      { id: 'player', label: 'INITIALIZING OPERATIVE — tactical rig, parkour, stamina', duration: 350 },
+      { id: 'player', label: 'INITIALIZING OPERATIVE — tactical rig, parkour, slide, vault', duration: 350 },
       { id: 'weapons', label: 'LOADING ARSENAL — 6 weapons, attachments, VFX', duration: 450 },
       { id: 'ai', label: 'SIMULATING HOSTILES — 6 archetypes, squad AI, director', duration: 600 },
       { id: 'security', label: 'ARMING SECURITY — cameras, terminals, alarm escalation', duration: 300 },
       { id: 'vfx', label: 'CALIBRATING VFX — bullet holes, sparks, dust, decals', duration: 250 },
       { id: 'audio', label: 'CALIBRATING AUDIO — procedural SFX, adaptive music, radio', duration: 250 },
       { id: 'achievements', label: 'LOADING PROGRESSION — achievements, stats, dialogue', duration: 200 },
+      { id: 'mobile', label: 'OPTIMIZING MOBILE — touch, gyro, haptics, PWA one-click', duration: 300 },
       { id: 'final', label: 'ENTERING BLACKOUT ZONE — Sector 7 awaits', duration: 350 },
     ];
 
@@ -178,8 +181,12 @@ export class Game {
       if (loadingStatus) loadingStatus.textContent = task.label;
       await new Promise<void>(resolve => {
         let p = 0;
-        const interval = setInterval(() => {
+        const interval = setInterval(async () => {
           p += 0.06;
+          if (task.id === 'textures' && p > 0.3 && p < 0.35) {
+            // Load textures in background
+            textureManager.loadAllGenerated().then(()=> console.log('[Game] Textures loaded'));
+          }
           if (p >= 1) {
             clearInterval(interval);
             assetLoader.complete(task.id);
@@ -194,6 +201,9 @@ export class Game {
     }
 
     clearInterval(tipInterval);
+
+    // Ensure textures loaded
+    await textureManager.loadAllGenerated();
 
     await this.world.buildDistrict();
     this.playerController.setColliders(this.world.colliders);

@@ -26,27 +26,38 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'assets/**/*'],
       manifest: {
-        name: 'BLACK VEIL',
+        name: 'BLACK VEIL - One-Tap Mobile',
         short_name: 'BLACK VEIL',
-        description: 'THE CITY FORGOT. YOU DIDN\'T. - Cinematic 3D Tactical Action',
+        description: 'THE CITY FORGOT. YOU DIDN\'T. Cinematic 3D Tactical Action - One-tap mobile, PWA, offline, gyro, haptics. M11 Dev.',
         theme_color: '#0a0a0f',
         background_color: '#050508',
         display: 'standalone',
-        orientation: 'landscape',
-        scope: '/',
-        start_url: '/',
+        orientation: 'any',
+        scope: './',
+        start_url: './index.html',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2,json}'],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/.*/,
+            urlPattern: /^https:\/\/.*/i,
             handler: 'NetworkFirst',
-            options: { cacheName: 'external-cache', expiration: { maxEntries: 50 } }
+            options: { cacheName: 'external-cache', expiration: { maxEntries: 100, maxAgeSeconds: 604800 } }
+          },
+          {
+            urlPattern: /\/assets\/characters\/.*/i,
+            handler: 'CacheFirst',
+            options: { cacheName: 'characters-cache', expiration: { maxEntries: 20, maxAgeSeconds: 2592000 } }
+          },
+          {
+            urlPattern: /\/assets\/textures\/.*/i,
+            handler: 'CacheFirst',
+            options: { cacheName: 'textures-cache', expiration: { maxEntries: 30, maxAgeSeconds: 2592000 } }
           }
         ]
       }

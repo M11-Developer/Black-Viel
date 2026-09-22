@@ -3,19 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#0a0a0f" />
-  <meta name="description" content="BLACK VEIL - THE CITY FORGOT. YOU DIDN'T. Cinematic 3D tactical stealth action in Veyra megacity." />
+  <meta name="theme-color" content="#050508" />
+  <meta name="description" content="BLACK VEIL - THE CITY FORGOT. YOU DIDN'T. Cinematic 3D tactical stealth action in Veyra megacity. One-tap mobile, PWA, offline, gyro, haptics. M11 Dev." />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="BLACK VEIL" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="BLACK VEIL">
   <meta property="og:title" content="BLACK VEIL - THE CITY FORGOT. YOU DIDN'T." />
-  <meta property="og:description" content="Enter Veyra. Survive its people. Uncover its secrets. AAA 3D tactical stealth action." />
+  <meta property="og:description" content="Enter Veyra. Survive its people. Uncover its secrets. AAA 3D tactical stealth action. One-tap mobile, no Termux." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="/icons/icon-512.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-192.png" />
-  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-  <link rel="manifest" href="/manifest.webmanifest" />
-  <title>BLACK VEIL | THE CITY FORGOT. YOU DIDN'T.</title>
+  <meta property="og:image" content="./public/assets/characters/player.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <title>BLACK VEIL | THE CITY FORGOT. YOU DIDN'T. | One-Tap Mobile</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Orbitron:wght@400;600;900&family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
@@ -32,13 +34,16 @@
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
     .loading-status{font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a5a6a;margin-top:16px;letter-spacing:.1em}
     .loading-tip{font-family:'Inter',sans-serif;font-size:12px;color:#8a8a9a;margin-top:32px;max-width:360px;text-align:center;line-height:1.5;opacity:.7}
+    .loading-skins{display:flex;gap:12px;margin-top:24px;overflow:hidden;max-width:90vw}
+    .loading-skins img{width:48px;height:48px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);object-fit:cover;opacity:0.6}
     #orientation-warning{position:fixed;inset:0;z-index:10000;background:#050508;display:none;align-items:center;justify-content:center;flex-direction:column;color:#fff;text-align:center;padding:24px}
     @media (orientation:portrait) and (max-width:768px){#orientation-warning{display:flex}}
     ::-webkit-scrollbar{width:6px;height:6px}
     ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+    #mobile-launch-hint{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:10001;background:rgba(0,0,0,0.8);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:8px 14px;font-size:10px;backdrop-filter:blur(20px);display:none}
+    @media (pointer:coarse){#mobile-launch-hint{display:flex;align-items:center;gap:8px}}
   </style>
-  <script type="module" crossorigin src="/assets/index-DSaq4spr.js"></script>
-<link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
+</head>
 <body>
   <div id="app">
     <canvas id="game-canvas" tabindex="0"></canvas>
@@ -49,17 +54,86 @@
       <div class="loading-bar-wrap"><div id="loading-bar" class="loading-bar"></div></div>
       <div id="loading-status" class="loading-status">INITIALIZING VEYRA...</div>
       <div id="loading-tip" class="loading-tip">Veyra went dark three years ago. Power, comms, transport — gone in 17 minutes. Official story: infrastructure failure. The evidence says otherwise.</div>
+      <div class="loading-skins" id="loading-skins">
+        <img src="./public/assets/characters/player.png" onerror="this.style.display='none'" alt="player">
+        <img src="./public/assets/characters/security.png" onerror="this.style.display='none'" alt="security">
+        <img src="./public/assets/characters/scout.png" onerror="this.style.display='none'" alt="scout">
+        <img src="./public/assets/characters/heavy.png" onerror="this.style.display='none'" alt="heavy">
+        <img src="./public/assets/characters/sniper.png" onerror="this.style.display='none'" alt="sniper">
+        <img src="./public/assets/characters/hunter.png" onerror="this.style.display='none'" alt="hunter">
+        <img src="./public/assets/characters/commander.png" onerror="this.style.display='none'" alt="commander">
+      </div>
     </div>
 
     <div id="orientation-warning">
       <div style="font-family:Orbitron;font-size:24px;letter-spacing:.2em;margin-bottom:16px">BLACK VEIL</div>
-      <div style="font-size:14px;opacity:.7;max-width:280px;line-height:1.5">For optimal experience, rotate your device to landscape. The dead city wasn't built for portrait.</div>
+      <div style="font-size:14px;opacity:.7;max-width:280px;line-height:1.5">For optimal experience, rotate your device to landscape. The dead city wasn't built for portrait.<br><br>أفضل تجربة في الوضع الأفقي</div>
       <div style="margin-top:24px;font-size:32px">↻</div>
+      <button onclick="document.getElementById('orientation-warning').style.display='none'" style="margin-top:20px;background:rgba(106,166,255,0.15);border:1px solid rgba(106,166,255,0.3);border-radius:20px;padding:8px 16px;color:#fff;font-size:11px">متابعة بالطول Continue Portrait</button>
+    </div>
+
+    <div id="mobile-launch-hint">
+      <span>📱</span><span>One-Tap Mobile • <a href="./mobile.html" style="color:#6aa6ff">Launcher</a> • PWA Installable</span>
     </div>
   </div>
 
-  <!-- UI Root Mounts - Game will inject -->
   <div id="ui-root"></div>
 
+  <script type="module" src="/src/main.ts"></script>
+  <script>
+    // PWA install prompt + mobile one-click improvements
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', e=>{
+      e.preventDefault();
+      deferredPrompt = e;
+      console.log('[PWA] Install prompt ready');
+      // Show custom install button in UI after game loads
+      setTimeout(()=>{
+        const hint = document.getElementById('mobile-launch-hint');
+        if(hint) hint.innerHTML = '<span>📲</span><span>ثبت اللعبة: </span><button onclick="window.installPWA()" style="background:#6aa6ff;border:none;border-radius:12px;padding:4px 10px;color:#fff;font-size:10px">تثبيت Install</button>';
+      }, 3000);
+    });
+    window.installPWA = async ()=>{
+      if(!deferredPrompt){ alert('افتح في Chrome > ⋮ > Add to Home screen'); return; }
+      deferredPrompt.prompt();
+      const {outcome} = await deferredPrompt.userChoice;
+      console.log('[PWA] User choice:', outcome);
+      deferredPrompt = null;
+    };
+    // Auto fullscreen on first tap for mobile
+    let hasFullscreen = false;
+    document.addEventListener('touchend', ()=>{
+      if(!hasFullscreen && /Android|iPhone|iPad/i.test(navigator.userAgent)){
+        hasFullscreen = true;
+        try{ document.documentElement.requestFullscreen?.(); }catch{}
+      }
+    }, {once:true});
+    // Loading bar simulation
+    let progress = 0;
+    const bar = document.getElementById('loading-bar');
+    const status = document.getElementById('loading-status');
+    const tips = [
+      'LOADING TEXTURES... Concrete, Metal, Fabric PBR',
+      'LOADING SKINS... Player, Security, Scout, Heavy, Sniper, Hunter, Commander',
+      'INITIALIZING VEYRA DISTRICTS... 7 districts + Safehouse',
+      'SPAWNING ENEMIES... 6 archetypes, 12 positions',
+      'BUILDING SECURITY SYSTEM... 5 cameras, 3 terminals',
+      'LOADING DIALOGUE... Kael, Helix logs, branching EN/AR',
+      'PREPARING MOBILE... Touch, Gyro, Haptics, PWA',
+      'READY — THE CITY FORGOT. YOU DIDN\'T.'
+    ];
+    const interval = setInterval(()=>{
+      progress += Math.random()*12;
+      if(progress>100) progress=100;
+      if(bar) bar.style.width = progress+'%';
+      if(status) status.textContent = tips[Math.floor(progress/14)] || tips[tips.length-1];
+      if(progress>=100) clearInterval(interval);
+    }, 200);
+    // Hide loading when game ready
+    window.addEventListener('bv:gameReady', ()=>{
+      const ls = document.getElementById('loading-screen');
+      if(ls){ ls.style.opacity='0'; setTimeout(()=>ls.style.display='none', 600); }
+    });
+  </script>
 </body>
 </html>
