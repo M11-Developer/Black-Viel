@@ -6,6 +6,10 @@ import { WEAPONS } from '../../data/weapons';
 import { achievementManager } from '../progression/AchievementManager';
 import { dialogueSystem } from '../story/DialogueSystem';
 import type { DialogueLine, DialogueChoice } from '../story/DialogueSystem';
+import { multiplayerManager } from '../multiplayer/MultiplayerManager';
+import { gameModeManager } from '../game/GameModes';
+import { MultiplayerUI } from './MultiplayerUI';
+import { createIconElement, getIconSvg, ICONS } from './IconSystem';
 
 export class UIManager {
   private root: HTMLElement;
@@ -210,14 +214,15 @@ export class UIManager {
           <div class="bv-menu-items">
             ${hasSave ? `<div class="bv-menu-item primary" data-action="continue">▶ ${localization.t('menu.continue')}</div>` : ''}
             <div class="bv-menu-item ${!hasSave ? 'primary' : ''}" data-action="new">${hasSave ? localization.t('menu.new_game') : '▶ ENTER VEYRA'}</div>
+            <div class="bv-menu-item" data-action="multiplayer" style="border-color:rgba(106,166,255,0.3); background:linear-gradient(90deg, rgba(106,166,255,0.12), rgba(139,92,246,0.08)); color:#6aa6ff;">MULTIPLAYER • 6 MODES • P2P</div>
             <div class="bv-menu-item" data-action="missions">MISSIONS • ${missionManager.getAll().length}</div>
             <div class="bv-menu-item" data-action="inventory">INVENTORY • ${WEAPONS.length} WEAPONS</div>
             <div class="bv-menu-item" data-action="achievements">ACHIEVEMENTS • ${unlockedCount}/${achievements.length}</div>
             <div class="bv-menu-item" data-action="map">MAP • SECTOR 7</div>
             <div class="bv-menu-item" data-action="settings">${localization.t('menu.settings')}</div>
             <div class="bv-menu-item" data-action="credits">${localization.t('menu.credits')}</div>
-            <div class="bv-menu-item" data-action="launcher" style="border-color:rgba(77,255,154,0.2); color:#4dff9a;">🚀 ONE-CLICK LAUNCHER</div>
-            <div class="bv-menu-item" data-action="install" id="install-btn" style="display:none">📲 INSTALL GAME</div>
+            <div class="bv-menu-item" data-action="launcher" style="border-color:rgba(77,255,154,0.2); color:#4dff9a;">ONE-CLICK LAUNCHER</div>
+            <div class="bv-menu-item" data-action="install" id="install-btn" style="display:none">INSTALL GAME</div>
           </div>
           <div style="margin-top:20px; padding:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.06); border-radius:4px;">
             <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.15em; color:#6aa6ff; margin-bottom:6px;">QUICK LAUNCH</div>
@@ -307,12 +312,18 @@ export class UIManager {
     }
   }
 
+  private multiplayerUI: MultiplayerUI | null = null;
+
   private handleMenuAction(action: string) {
     switch (action) {
       case 'continue':
       case 'new':
         this.showHUD();
         window.dispatchEvent(new CustomEvent('bv:startGame', { detail: { isNew: action === 'new' } }));
+        break;
+      case 'multiplayer':
+        if (!this.multiplayerUI) this.multiplayerUI = new MultiplayerUI();
+        this.multiplayerUI.show();
         break;
       case 'missions':
         this.showMissions();
